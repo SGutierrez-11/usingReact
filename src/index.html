@@ -11,9 +11,19 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
+    <div id="root"></div>
     <div id="like_button_container"></div>
+    <div id="hello-example"></div>
+    <div id="timer-example"></div>
+    <div id="timer-10-10"></div>
+    <div id="all-example"></div>
+    <div id="markdown-example"></div>
+    <script type= "text/babel">
 
-   
+    ReactDOM.render(
+      <h1 Hello word></h1>,
+      document.getElementById('root')
+    );
   
     class HelloMessage extends React.Component {
       render() {
@@ -26,20 +36,34 @@
     }
     
     ReactDOM.render(
-      <HelloMessage name="Taylor" />,
+      <HelloMessage name="Santiago Gutierrez y Johan Stiven Ricardo" />,
       document.getElementById('hello-example')
     );
 
     class Timer extends React.Component {
       constructor(props) {
         super(props);
-        this.state = { seconds: 0 };
+        this.state = { hours: 0, minutes: 0, seconds: 0 };
       }
     
       tick() {
+        if(this.state.seconds<59){
         this.setState(state => ({
           seconds: state.seconds + 1
         }));
+        }else{
+          this.setState(state => ({
+            seconds: 0,
+            minutes: state.minutes + 1
+          }));
+          if(this.state.minutes==59 && this.state.seconds==59){
+            this.setState(state => ({
+            seconds: 0,
+            minutes: 0,
+            hours: state.hours + 1
+          }));
+          }
+        }
       }
     
       componentDidMount() {
@@ -53,7 +77,7 @@
       render() {
         return (
           <div>
-            Segundos: {this.state.seconds}
+            CURRENT TIME : {this.state.hours}:{this.state.minutes}:{this.state.seconds}
           </div>
         );
       }
@@ -64,115 +88,203 @@
       document.getElementById('timer-example')
     );
 
-    class TodoApp extends React.Component {
+    class Timer2 extends React.Component {
       constructor(props) {
         super(props);
-        this.state = { items: [], text: '' };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.state = { hours: 0, minutes: 0, seconds: 0, op: 0, op1: 0};
+      }
+    
+      tick() {
+        if(this.state.seconds < 59){
+          this.setState(state => ({
+          seconds: state.seconds + 1,
+          }));
+          if(this.state.seconds != 0){
+          this.setState(state => ({
+              op: this.state.seconds % 10
+           }));
+          }
+         if(this.state.op == 0){
+          this.setState(state => ({
+          minutes: state.minutes + 1
+
+          }));
+          if(this.state.minutes<59){
+            this.setState(state => ({
+              op1: this.state.minutes % 10
+           }));
+           
+            if(this.state.op1 == 0){
+              this.setState(state => ({
+              hours: state.hours + 1
+           }));
+            }
+          }else{
+            this.setState(state => ({
+            minutes: 0,
+            hours: state.hours + 1
+          }));
+          }
+          
+        }
+        }else{
+          this.setState(state => ({
+            seconds: 0,
+            minutes: state.minutes + 1
+            
+          }));
+          if(this.state.minutes!=0){
+            this.setState(state => ({
+            
+            op1: this.state.minutes % 10
+            }));
+          }
+            if(op1 == 0){
+              this.setState(state => ({
+              hours: state.hours + 1
+           }));
+          if(this.state.minutes==59 && this.state.seconds==59){
+            this.setState(state => ({
+            seconds: 0,
+            minutes: 0,
+            hours: state.hours + 1
+          }));
+          }
+        }
+      }
+    }
+    
+      componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000);
+      }
+    
+      componentWillUnmount() {
+        clearInterval(this.interval);
       }
     
       render() {
         return (
           <div>
-            <h3>Tareas pendientes</h3>
-            <TodoList items={this.state.items} />
-            <form onSubmit={this.handleSubmit}>
-              <label htmlFor="new-todo">
-                ¿Qué se necesita hacer?
-              </label>
-              <input
-                id="new-todo"
-                onChange={this.handleChange}
-                value={this.state.text}
-              />
-              <button>
-                Añadir #{this.state.items.length + 1}
-              </button>
-            </form>
+            TIME 10-10: {this.state.hours}:{this.state.minutes}:{this.state.seconds}
           </div>
-        );
-      }
-    
-      handleChange(e) {
-        this.setState({ text: e.target.value });
-      }
-    
-      handleSubmit(e) {
-        e.preventDefault();
-        if (this.state.text.length === 0) {
-          return;
-        }
-        const newItem = {
-          text: this.state.text,
-          id: Date.now()
-        };
-        this.setState(state => ({
-          items: state.items.concat(newItem),
-          text: ''
-        }));
-      }
-    }
-    
-    class TodoList extends React.Component {
-      render() {
-        return (
-          <ul>
-            {this.props.items.map(item => (
-              <li key={item.id}>{item.text}</li>
-            ))}
-          </ul>
         );
       }
     }
     
     ReactDOM.render(
-      <TodoApp />,
-      document.getElementById('todos-example')
+      <Timer2 />,
+      document.getElementById('timer-10-10')
     );
 
-    class MarkdownEditor extends React.Component {
-      constructor(props) {
-        super(props);
-        this.md = new Remarkable();
-        this.handleChange = this.handleChange.bind(this);
-        this.state = { value: '¡Hola **mundo**!' };
+    class TodoApp extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { items: [], text: '' };
+          this.handleChange = this.handleChange.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+        }
+      
+        render() {
+          return (
+            <div>
+              <h3>TODO</h3>
+              <TodoList items={this.state.items} />
+              <form onSubmit={this.handleSubmit}>
+                <label htmlFor="new-todo">
+                  ¿Qué necesitas?
+                </label>
+                <input
+                  id="new-todo"
+                  onChange={this.handleChange}
+                  value={this.state.text}
+                />
+                <button>
+                  Add Task {String.fromCharCode(this.state.items.length +65)}
+                </button>
+              </form>
+            </div>
+          );
+        }
+      
+        handleChange(e) {
+          this.setState({ text: e.target.value });
+        }
+      
+        handleSubmit(e) {
+          e.preventDefault();
+          if (this.state.text.length === 0) {
+            return;
+          }
+          const newItem = {
+            text: this.state.text,
+            id: Date.now()
+          };
+          this.setState(state => ({
+            items: state.items.concat(newItem),
+            text: ''
+          }));
+        }
       }
-    
-      handleChange(e) {
-        this.setState({ value: e.target.value });
+      
+      class TodoList extends React.Component {
+        render() {
+          return (
+            <ol type="A">
+              {this.props.items.map(item => (
+                <li key={String.fromCharCode(item.id)}>{item.text}</li>
+              ))}
+              </ol>
+          );
+        }
       }
-    
-      getRawMarkup() {
-        return { __html: this.md.render(this.state.value) };
+      
+      ReactDOM.render(
+        <TodoApp />,
+        document.getElementById('all-example')
+      );
+
+      class MarkdownEditor extends React.Component {
+        constructor(props) {
+          super(props);
+          this.md = new Remarkable();
+          this.handleChange = this.handleChange.bind(this);
+          this.state = { value: 'Hello, **world**!' };
+        }
+      
+        handleChange(e) {
+          this.setState({ value: e.target.value });
+        }
+      
+        getRawMarkup() {
+          return { __html: this.md.render(this.state.value) };
+        }
+      
+        render() {
+          return (
+            <div className="MarkdownEditor">
+              <h3>Input</h3>
+              <label htmlFor="markdown-content">
+                Enter some markdown
+              </label>
+              <textarea
+                id="markdown-content"
+                onChange={this.handleChange}
+                defaultValue={this.state.value}
+              />
+              <h3>Output</h3>
+              <div
+                className="content"
+                dangerouslySetInnerHTML={this.getRawMarkup()}
+              />
+            </div>
+          );
+        }
       }
-    
-      render() {
-        return (
-          <div className="MarkdownEditor">
-            <h3>Entrada</h3>
-            <label htmlFor="markdown-content">
-              Introduce algún texto en markdown
-            </label>
-            <textarea
-              id="markdown-content"
-              onChange={this.handleChange}
-              defaultValue={this.state.value}
-            />
-            <h3>Salida</h3>
-            <div
-              className="content"
-              dangerouslySetInnerHTML={this.getRawMarkup()}
-            />
-          </div>
-        );
-      }
-    }
-    
-    ReactDOM.render(
-      <MarkdownEditor />,
-      document.getElementById('markdown-example')
-    );
+      
+      ReactDOM.render(
+        <MarkdownEditor />,
+        document.getElementById('markdown-example')
+      );
 
 
     </script>
